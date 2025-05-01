@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NewOpportunityModal from './Modals/NewOpportunityModal';
 
-function Opportunities() {
+function Opportunities({ user }) {
   const [opportunities, setOpportunities] = useState([]);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [opportunitySearch, setOpportunitySearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
- 
+  const [showNewModal, setShowNewModal] = useState(false);
 
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL || 'http://138.197.93.75:3001/api';
@@ -26,7 +27,7 @@ function Opportunities() {
         console.error('Error fetching opportunities:', err);
         setLoading(false);
       });
-  }, [currentPage]);
+  }, [currentPage, showNewModal]);
 
   const handleSearch = (e) => {
     setOpportunitySearch(e.target.value);
@@ -38,13 +39,43 @@ function Opportunities() {
     op.description?.toLowerCase().includes(opportunitySearch.toLowerCase())
   );
 
+  const handleSubmitOpportunity = async (formData) => {
+    try {
+      const res = await fetch(`${API_URL}/opportunities`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // important to send cookies for authentication
+        body: JSON.stringify(formData),
+      });
+  
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to create opportunity');
+      }
+  
+      alert('Opportunity submitted for approval.');
+      setShowNewModal(false);
+      // Optionally refetch opportunities
+      setCurrentPage(1);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+  
+
   const handleBackToHome = () => navigate('/');
 
   return (
     <div className="container mt-4">
       {!selectedOpportunity ? (
         <>
-          <h4 className="mb-4">Opportunities</h4>
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h4 className="mb-0">Opportunities</h4>
+            <button className="btn btn-success" onClick={() => setShowNewModal(true)}>
+              + Post New Opportunity
+            </button>
+          </div>
+
           <input
             type="text"
             className="form-control mb-3"
@@ -52,6 +83,7 @@ function Opportunities() {
             value={opportunitySearch}
             onChange={handleSearch}
           />
+
           <div className="row">
             {filteredOpportunities.map((op, index) => (
               <div className="col-md-4 mb-4" key={index}>
@@ -74,15 +106,27 @@ function Opportunities() {
 
           <div className="d-flex justify-content-center mt-3">
             <div className="btn-group">
-              <button className="btn btn-outline-secondary" onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}>
+              <button
+                className="btn btn-outline-secondary"
+                onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+              >
                 &laquo;
               </button>
               {[...Array(totalPages)].map((_, i) => (
-                <button key={i} className={`btn ${currentPage === i + 1 ? 'btn-secondary' : 'btn-outline-secondary'}`} onClick={() => setCurrentPage(i + 1)}>
+                <button
+                  key={i}
+                  className={`btn ${currentPage === i + 1 ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                  onClick={() => setCurrentPage(i + 1)}
+                >
                   {i + 1}
                 </button>
               ))}
-              <button className="btn btn-outline-secondary" onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>
+              <button
+                className="btn btn-outline-secondary"
+                onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
                 &raquo;
               </button>
             </div>
@@ -93,6 +137,15 @@ function Opportunities() {
               Back to Home
             </button>
           </div>
+
+          <NewOpportunityModal
+            show={showNewModal}
+            onHide={() => setShowNewModal(false)}
+            onSubmit={handleSubmitOpportunity} // ✅ Make sure this is passed
+            postedBy={user?.email || 'Unknown'} // or user?.name if you prefer
+          />
+
+
         </>
       ) : (
         <div className="card mx-auto" style={{ maxWidth: '600px' }}>

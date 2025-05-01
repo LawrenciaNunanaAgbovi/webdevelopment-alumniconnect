@@ -16,10 +16,7 @@ function Users() {
   
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_URL}/users?page=${currentPage}`, {
-      method: 'GET',
-      credentials: 'include', // Include cookies (e.g. accessToken)
-    })
+    fetch(`${API_URL}/users?page=${currentPage}`)
       .then(res => {
         if (!res.ok) {
           throw new Error(`Error ${res.status}: ${res.statusText}`);
@@ -28,7 +25,7 @@ function Users() {
       })
       .then(data => {
         setUsers(data.users || []);
-        setTotalPages(data.totalPages);
+        setTotalPages(data.totalPages || 1);
         setLoading(false);
       })
       .catch(err => {
@@ -36,6 +33,7 @@ function Users() {
         setLoading(false);
       });
   }, [currentPage]);
+  
   
   
   const handleSearch = (e) => {

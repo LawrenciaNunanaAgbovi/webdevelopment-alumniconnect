@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,6 +10,22 @@ const Navbar = ({
   setShowSignup
 }) => {
   const navigate = useNavigate();
+  const [pendingCount, setPendingCount] = useState(0);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://138.197.93.75:3001/api';
+
+  useEffect(() => {
+    if (auth === 'admin') {
+      fetch(`${API_URL}/opportunities`, {
+        credentials: 'include',
+      })
+        .then(res => res.json())
+        .then(data => {
+          const unapproved = (data.opportunities || []).filter(op => !op.approved).length;
+          setPendingCount(unapproved);
+        })
+        .catch(err => console.error('Error fetching opportunities:', err));
+    }
+  }, [auth]);
 
   return (
     <nav className="navbar navbar-expand-lg bg-light position-relative" data-bs-theme="light" style={{ height: '60px' }}>
@@ -61,7 +77,7 @@ const Navbar = ({
                     id="adminDropdown"
                     style={{ position: 'relative', zIndex: 1000 }}
                   >
-                    Admin Panel
+                    Admin Panel {pendingCount > 0 && <span style={{ color: 'red' }}>🔴</span>}
                   </Dropdown.Toggle>
                   <Dropdown.Menu className="shadow mt-2 show-on-top">
                     <Dropdown.Item onClick={() => navigate('/admin?type=opportunities')}>

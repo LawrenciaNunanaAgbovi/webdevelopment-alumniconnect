@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const requireAuth = require('../middleware/requireAuth');
+const requireAdmin = require('../middleware/requireAdmin');
+
 
 /**
  * @swagger
@@ -42,7 +44,7 @@ const requireAuth = require('../middleware/requireAuth');
  *                   items:
  *                     $ref: '#/components/schemas/User'
  */
-router.get("/", requireAuth, async (req, res) => {
+router.get("/", async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 5;
   const skip = (page - 1) * limit;
@@ -115,7 +117,7 @@ router.post("/", async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get("/search", requireAuth, async (req, res) => {
+router.get("/search", async (req, res) => {
   const nameQuery = req.query.name;
   if (!nameQuery) {
     return res.status(400).json({ error: "Name query parameter is required" });
@@ -126,6 +128,24 @@ router.get("/search", requireAuth, async (req, res) => {
       name: { $regex: new RegExp(nameQuery, "i") },
     });
     res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+router.put('/:userId', requireAuth, requireAdmin, async (req, res) => {
+  const { userId } = req.params;
+  const { role } = req.body;
+
+  try {
+    const updated = await User.findByIdAndUpdate(
+      userId,
+      { role },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ error: 'User not found' });
+
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -190,7 +210,7 @@ router.get("/:username", requireAuth, async (req, res) => {
  *       404:
  *         description: User not found
  */
-router.put("/:username", requireAuth, async (req, res) => {
+router.put("/:username", async (req, res) => {
   try {
     const updated = await User.findOneAndUpdate(
       { username: req.params.username },

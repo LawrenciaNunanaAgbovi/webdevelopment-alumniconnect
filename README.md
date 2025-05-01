@@ -34,9 +34,12 @@ Screenshot is in the assest folder
 
 7.For 10% extra credit, include a "service" layer and unit and integration test cases: see "node-examples/modular-best-practice" for example (NOTE: if you plan on doing this, let me know so when I come around the class to check on your work, we can discuss expectations)
 
+1. A person cannot view users/opportunities unless they are logged in or sign-up
+2. A role (user) can not view admin panel. Only when their role is admin
+3. Only admin can approve new users and opportunities. 
+4. When a new user is approved it adds to users database and when an opportunity is approved it adds to opportunities
 
-
-
+Users and admins will be able to add opportunities. Only Admins will be able to approve opportunities. 
 
 
 
@@ -49,3 +52,6 @@ npm run build
 sudo cp -r dist/* /var/www/project-2/
 sudo chown -R www-data:www-data /var/www/project-2
 sudo systemctl reload nginx
+pm2 restart backend --update-env
+
+pm2 restart ecosystem.config.js --update-env

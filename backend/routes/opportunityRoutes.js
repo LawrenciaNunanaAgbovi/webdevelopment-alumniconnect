@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Opportunity = require("../models/opportunity");
 const requireAuth = require('../middleware/requireAuth');
+const requireAdmin = require('../middleware/requireAdmin');
+
 
 
 /**
@@ -83,7 +85,14 @@ router.get("/", async (req, res) => {
  */
 router.post("/", requireAuth, async (req, res) => {
   try {
-    const newOpportunity = new Opportunity(req.body);
+    const data = {
+      ...req.body,
+      needs_approval: true,
+      approved: false,
+      approved_by: null,
+    };
+
+    const newOpportunity = new Opportunity(data);
     const saved = await newOpportunity.save();
     res.status(201).json(saved);
   } catch (err) {
@@ -91,6 +100,18 @@ router.post("/", requireAuth, async (req, res) => {
   }
 });
 
+// GET /opportunities/pending - Get all unapproved opportunities
+router.get("/pending", requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const pendingOpportunities = await Opportunity.find({
+      needs_approval: true, 
+      approved: false, 
+    });
+    res.json(pendingOpportunities);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 /**
  * @swagger
  * /opportunities/search:
@@ -166,6 +187,8 @@ router.get("/:opportunityId", async (req, res) => {
   }
 });
 
+
+
 /**
  * @swagger
  * /opportunities/{opportunityId}:
@@ -193,17 +216,29 @@ router.get("/:opportunityId", async (req, res) => {
  *       404:
  *         description: Opportunity not found
  */
-router.put("/:opportunityId", requireAuth, async (req, res) => {
+
+router.put("/:opportunityId", requireAuth, requireAdmin, async (req, res) => {
   try {
-    const updated = await Opportunity.findByIdAndUpdate(req.params.opportunityId, req.body, {
+    const updates = {
+      ...req.body,
+      approved: true,
+      needs_approval: false,
+      approved_by: req.user?.name || 'Admin',
+    };
+
+    const updated = await Opportunity.findByIdAndUpdate(req.params.opportunityId, updates, {
       new: true,
     });
+
     if (!updated) return res.status(404).json({ error: "Opportunity not found" });
+
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
+
+
 
 /**
  * @swagger

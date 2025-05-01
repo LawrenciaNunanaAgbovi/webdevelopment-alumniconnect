@@ -17,15 +17,15 @@ const PORT = process.env.PORT || 3001;
 
 // ✅ CORS setup with frontend domain
 const corsOptions = {
-  origin: 'http://138.197.93.75', // ✅ Your frontend URL
-  credentials: true,              // ✅ Allow cookies to be sent
+  origin: 'http://138.197.93.75', // frontend URL
+  credentials: true,              // allow cookies (e.g. accessToken)
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions));         // ✅ Apply cors middleware here
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Swagger setup
+// ✅ Swagger
 setupSwagger(app);
 
 // ✅ API Routes
@@ -34,12 +34,12 @@ app.use("/api/users", userRoutes);
 app.use("/api/opportunities", opportunityRoutes);
 app.use("/api/majors", majorRoutes);
 
-// ✅ Root check route
+// ✅ Test endpoint
 app.get("/api", (req, res) => {
   res.send("API is running. Try /api/users or /api/opportunities.");
 });
 
-// ✅ MongoDB Connection
+// ✅ MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))

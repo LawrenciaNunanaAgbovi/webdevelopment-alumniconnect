@@ -1,8 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Profile = ({ user }) => {
+const Profile = ({ user, setAuth, setUser  }) => {
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setAuth('none');
+    setUser(null);
+    navigate('/');
+  };
 
   if (!user) {
     return (
@@ -42,6 +48,9 @@ const Profile = ({ user }) => {
           <button className="btn btn-outline-secondary mt-3" onClick={() => navigate('/')}>
             Back to Home
           </button>
+          <button className="btn btn-outline-danger" onClick={handleLogout}>
+              Logout
+            </button>
         </div>
       </div>
     </div>

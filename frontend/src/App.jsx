@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useNavigate,
-  useLocation
-} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -16,8 +10,6 @@ import Opportunities from './components/Opportunities';
 import AdminPanel from './components/AdminPanel';
 import LoginModal from './components/Modals/LoginModal';
 import SignupModal from './components/Modals/SignupModal';
-import { signupUser } from './services/authService';
-
 
 function AppWrapper() {
   return (
@@ -35,21 +27,7 @@ function App() {
   const [adminView, setAdminView] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-  const [user, setUser] = useState(null); 
-
-  const handleSignup = async (formData) => {
-    try {
-      const newUser = await signupUser(formData);
-      setAuth(formData.role);
-      setUser(newUser);
-      setShowSignup(false);
-      alert('Account created successfully!');
-      navigate('/profile');
-    } catch (err) {
-      alert(err.message);
-    }
-  };
-  
+  const [user, setUser] = useState(null);
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -64,25 +42,23 @@ function App() {
 
       <div className="flex-grow-1">
         <Routes>
-        <Route
-          path="/"
-          element={
-            <Home
-              auth={auth}
-              setAuth={setAuth}
-              setAdminView={setAdminView}
-              navigate={navigate}
-              setShowLogin={setShowLogin}
-              setShowSignup={setShowSignup}
-            />
-          }
-        />
-
-
-          <Route path="/profile" element={<Profile user={user} />} />
+          <Route
+            path="/"
+            element={
+              <Home
+                auth={auth}
+                setAuth={setAuth}
+                setAdminView={setAdminView}
+                navigate={navigate}
+                setShowLogin={setShowLogin}
+                setShowSignup={setShowSignup}
+              />
+            }
+          />
+          <Route path="/profile" element={<Profile user={user} setAuth={setAuth} setUser={setUser} />} />
           <Route path="/users" element={<Users />} />
           <Route path="/opportunities" element={<Opportunities />} />
-          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/admin" element={<AdminPanel user={user} />} />
         </Routes>
       </div>
 
@@ -90,6 +66,8 @@ function App() {
         show={showLogin}
         onClose={() => setShowLogin(false)}
         setAuth={setAuth}
+        setUser={setUser}
+        navigate={navigate}
         setShowSignup={setShowSignup}
       />
 
@@ -98,10 +76,9 @@ function App() {
         onClose={() => setShowSignup(false)}
         setAuth={setAuth}
         setUser={setUser}
+        navigate={navigate}
         setShowLogin={setShowLogin}
-        onSignup={handleSignup}  
       />
-
 
       <Footer />
     </div>
