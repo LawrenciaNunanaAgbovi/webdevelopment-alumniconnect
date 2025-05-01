@@ -6,7 +6,7 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Project 1 API',
+      title: 'Project 2 API',
       version: '1.0.0',
       description: 'API documentation for User, Opportunity, and Major endpoints',
     },

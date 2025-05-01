@@ -17,7 +17,12 @@ Link to deployed frontend: http://138.197.93.75
 Screenshot is in the assest folder
 
 1.Work on Pagination ✅
+
 2.Incorporate authentication using cookies and including refresh tokens: see "node-react-examples/auth-localstorage-vs-cookies" from repository. ✅
+
+** test login and sign up from the frontend. changege profile logic to get profile information for the user login. 
+** also chnage logic to view users and opportunities only after login or sign up. 
+
 
 3.Incorporate "messages" between users
 
@@ -40,3 +45,7 @@ cd ~/project-2/project-2-LawrenciaNunanaAgbovi/backend
 cd ~/project-2/project-2-LawrenciaNunanaAgbovi/frontend
 pm2 logs backend
 pm2 restart backend
+npm run build
+sudo cp -r dist/* /var/www/project-2/
+sudo chown -R www-data:www-data /var/www/project-2
+sudo systemctl reload nginx

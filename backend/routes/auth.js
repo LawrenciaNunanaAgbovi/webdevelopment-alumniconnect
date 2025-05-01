@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwtUtils = require('../utils/jwt');
 const User = require('../models/user'); 
+const requireAuth = require('../middleware/requireAuth');
 
 /**
  * @route POST /api/auth/login
@@ -44,6 +45,13 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+router.get('/protected', requireAuth, (req, res) => {
+  res.status(200).json({
+    message: 'You are authenticated',
+    user: req.user, // user info from the token
+  });
 });
 
 module.exports = router;

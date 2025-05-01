@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Opportunity = require("../models/opportunity");
+const requireAuth = require('../middleware/requireAuth');
+
 
 /**
  * @swagger
@@ -79,7 +81,7 @@ router.get("/", async (req, res) => {
  *       400:
  *         description: Invalid input
  */
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, async (req, res) => {
   try {
     const newOpportunity = new Opportunity(req.body);
     const saved = await newOpportunity.save();
@@ -88,6 +90,7 @@ router.post("/", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
 /**
  * @swagger
  * /opportunities/search:
@@ -190,7 +193,7 @@ router.get("/:opportunityId", async (req, res) => {
  *       404:
  *         description: Opportunity not found
  */
-router.put("/:opportunityId", async (req, res) => {
+router.put("/:opportunityId", requireAuth, async (req, res) => {
   try {
     const updated = await Opportunity.findByIdAndUpdate(req.params.opportunityId, req.body, {
       new: true,
@@ -221,7 +224,7 @@ router.put("/:opportunityId", async (req, res) => {
  *       404:
  *         description: Opportunity not found
  */
-router.delete("/:opportunityId", async (req, res) => {
+router.delete("/:opportunityId", requireAuth, async (req, res) => {
   try {
     const deleted = await Opportunity.findByIdAndDelete(req.params.opportunityId);
     if (!deleted) return res.status(404).json({ error: "Opportunity not found" });
@@ -230,6 +233,7 @@ router.delete("/:opportunityId", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 
 module.exports = router;

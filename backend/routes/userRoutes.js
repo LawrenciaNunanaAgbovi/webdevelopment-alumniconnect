@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
+const requireAuth = require('../middleware/requireAuth');
 
 /**
  * @swagger
@@ -41,7 +42,7 @@ const User = require("../models/user");
  *                   items:
  *                     $ref: '#/components/schemas/User'
  */
-router.get("/", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 5;
   const skip = (page - 1) * limit;
@@ -60,6 +61,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 /**
  * @swagger
@@ -113,16 +115,15 @@ router.post("/", async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get("/search", async (req, res) => {
+router.get("/search", requireAuth, async (req, res) => {
   const nameQuery = req.query.name;
-
   if (!nameQuery) {
     return res.status(400).json({ error: "Name query parameter is required" });
   }
 
   try {
     const users = await User.find({
-      name: { $regex: new RegExp(nameQuery, "i") }, // case-insensitive search
+      name: { $regex: new RegExp(nameQuery, "i") },
     });
     res.json(users);
   } catch (err) {
@@ -153,7 +154,7 @@ router.get("/search", async (req, res) => {
  *       404:
  *         description: User not found
  */
-router.get("/:username", async (req, res) => {
+router.get("/:username", requireAuth, async (req, res) => {
   try {
     const user = await User.findOne({ username: req.params.username });
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -162,6 +163,7 @@ router.get("/:username", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 /**
  * @swagger
@@ -188,7 +190,7 @@ router.get("/:username", async (req, res) => {
  *       404:
  *         description: User not found
  */
-router.put("/:username", async (req, res) => {
+router.put("/:username", requireAuth, async (req, res) => {
   try {
     const updated = await User.findOneAndUpdate(
       { username: req.params.username },
@@ -201,6 +203,7 @@ router.put("/:username", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
 
 /**
  * @swagger
@@ -221,7 +224,7 @@ router.put("/:username", async (req, res) => {
  *       404:
  *         description: User not found
  */
-router.delete("/:username", async (req, res) => {
+router.delete("/:username", requireAuth, async (req, res) => {
   try {
     const deleted = await User.findOneAndDelete({ username: req.params.username });
     if (!deleted) return res.status(404).json({ error: "User not found" });
@@ -231,4 +234,7 @@ router.delete("/:username", async (req, res) => {
   }
 });
 
+
 module.exports = router;
+
+

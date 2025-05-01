@@ -16,18 +16,27 @@ function Users() {
   
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_URL}/users?page=${currentPage}`)
-      .then(res => res.json())
+    fetch(`${API_URL}/users?page=${currentPage}`, {
+      method: 'GET',
+      credentials: 'include', // Include cookies (e.g. accessToken)
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Error ${res.status}: ${res.statusText}`);
+        }
+        return res.json();
+      })
       .then(data => {
         setUsers(data.users || []);
-        setTotalPages(data.totalPages); 
+        setTotalPages(data.totalPages);
         setLoading(false);
       })
       .catch(err => {
         console.error('Error fetching users:', err);
         setLoading(false);
       });
-  }, [currentPage]); 
+  }, [currentPage]);
+  
   
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
