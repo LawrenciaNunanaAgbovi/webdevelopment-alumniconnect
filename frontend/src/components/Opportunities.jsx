@@ -44,7 +44,7 @@ function Opportunities({ user }) {
       const res = await fetch(`${API_URL}/opportunities`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // important to send cookies for authentication
+        credentials: 'include', 
         body: JSON.stringify(formData),
       });
   
@@ -55,7 +55,7 @@ function Opportunities({ user }) {
   
       alert('Opportunity submitted for approval.');
       setShowNewModal(false);
-      // Optionally refetch opportunities
+      
       setCurrentPage(1);
     } catch (err) {
       alert(err.message);
@@ -141,8 +141,8 @@ function Opportunities({ user }) {
           <NewOpportunityModal
             show={showNewModal}
             onHide={() => setShowNewModal(false)}
-            onSubmit={handleSubmitOpportunity} // ✅ Make sure this is passed
-            postedBy={user?.email || 'Unknown'} // or user?.name if you prefer
+            onSubmit={handleSubmitOpportunity} 
+            postedBy={user?.email || 'Unknown'} 
           />
 
 

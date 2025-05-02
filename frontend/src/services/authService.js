@@ -11,7 +11,7 @@ export async function signupUser(formData) {
         throw new Error(err.error || 'Signup failed');
       }
   
-      return await res.json(); // returns the new user
+      return await res.json(); 
     } catch (err) {
       console.error('Signup error:', err);
       throw err;
@@ -23,7 +23,7 @@ export async function signupUser(formData) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
-      credentials: 'include', // ⚠️ Needed for cookies
+      credentials: 'include', 
     });
   
     if (!res.ok) {
@@ -31,7 +31,7 @@ export async function signupUser(formData) {
       throw new Error(error.error || 'Login failed');
     }
   
-    return await res.json(); // returns message or payload
+    return await res.json(); 
   }
   
   

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
@@ -29,6 +29,51 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [user, setUser] = useState(null);
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://138.197.93.75:3001/api';
+
+
+  useEffect(() => {
+    const fetchUser = () => {
+      fetch(`${API_URL}/auth/me`, {
+        credentials: 'include',
+      })
+        .then(async (res) => {
+          if (res.status === 403 || res.status === 401) {
+            // Access token expired, try to refresh
+            const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+              method: 'POST',
+              credentials: 'include',
+            });
+  
+            if (refreshRes.ok) {
+              // Retry /me after refresh
+              return fetch(`${API_URL}/auth/me`, {
+                credentials: 'include',
+              });
+            } else {
+              throw new Error('Session expired');
+            }
+          }
+          return res;
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data?.email) {
+            setUser(data);
+            setAuth(data.role);
+          }
+        })
+        .catch(() => {
+          setUser(null);
+          setAuth(null);
+        });
+    };
+  
+    fetchUser();
+  }, []);
+  
+
 
   return (
     <div className="d-flex flex-column min-vh-100">

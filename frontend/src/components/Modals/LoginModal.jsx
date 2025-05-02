@@ -9,7 +9,7 @@ const LoginModal = ({ show, onClose, setAuth, setUser, navigate, setShowSignup }
 
   const handleLogin = async () => {
     try {
-      // Step 1: Login and receive cookies
+      
       const res = await fetch('http://138.197.93.75:3001/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -20,7 +20,7 @@ const LoginModal = ({ show, onClose, setAuth, setUser, navigate, setShowSignup }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Login failed');
 
-      // Step 2: Fetch authenticated user profile using cookies
+      
       const userRes = await fetch('http://138.197.93.75:3001/api/auth/me', {
         method: 'GET',
         credentials: 'include',
@@ -28,9 +28,12 @@ const LoginModal = ({ show, onClose, setAuth, setUser, navigate, setShowSignup }
 
       if (!userRes.ok) throw new Error('Failed to fetch user profile');
       const user = await userRes.json();
+      if (!user.approved) {
+        throw new Error("Your account has not been approved by an admin yet.");
+      }      
 
-      // Step 3: Set global state and redirect
-      setAuth(user.role || role); // just in case role wasn't chosen
+      
+      setAuth(user.role || role); 
       setUser(user);
       onClose();
       navigate('/profile');

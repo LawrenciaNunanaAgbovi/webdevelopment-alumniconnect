@@ -100,7 +100,7 @@ router.post("/", requireAuth, async (req, res) => {
   }
 });
 
-// GET /opportunities/pending - Get all unapproved opportunities
+
 router.get("/pending", requireAuth, requireAdmin, async (req, res) => {
   try {
     const pendingOpportunities = await Opportunity.find({
@@ -146,7 +146,7 @@ router.get("/search", async (req, res) => {
 
   try {
     const opportunities = await Opportunity.find({
-      title: { $regex: new RegExp(titleQuery, "i") }, // case-insensitive search
+      title: { $regex: new RegExp(titleQuery, "i") }, 
     });
     res.json(opportunities);
   } catch (err) {

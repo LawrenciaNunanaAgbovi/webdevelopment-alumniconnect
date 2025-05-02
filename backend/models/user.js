@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   company: { type: String },
   title: { type: String },
   linkedin: { type: String },
+  approved: { type: Boolean, default: false },
   role: {
     type: String,
     enum: ['user', 'admin'],

@@ -1,15 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://138.197.93.75:3001/api';
 
 const Profile = ({ user, setAuth, setUser }) => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    setAuth('none');
-    setUser(null);
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(`${API_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+  
+      if (res.ok) {
+        setUser(null);
+        setAuth('none');
+        navigate('/');
+      } else {
+        alert('Logout failed');
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
   };
+  
+  
 
   if (!user) {
     return (

@@ -4,7 +4,7 @@ const Message = require('../models/message');
 const requireAuth = require('../middleware/requireAuth');
 const User = require('../models/user'); 
 
-// Get all messages for logged-in user
+
 router.get('/', requireAuth, async (req, res) => {
   try {
     const messages = await Message.find({ recipientEmail: req.user.email });
@@ -14,7 +14,6 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
-// Send a message
 
 router.post('/', requireAuth, async (req, res) => {
   try {
@@ -26,7 +25,7 @@ router.post('/', requireAuth, async (req, res) => {
     }
 
     const newMessage = new Message({
-      senderId: req.user._id,
+      senderEmail: req.user.email,
       senderName: req.user.name,
       recipientEmail,
       recipientName: recipient.name,
@@ -42,9 +41,33 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
-  
+router.get('/', requireAuth, async (req, res) => {
+  try {
+    const messages = await Message.find({
+      recipientEmail: req.user.email,
+      parentMessageId: null 
+    }).sort({ createdAt: -1 });
 
-// Mark a message as read
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/:id/thread', requireAuth, async (req, res) => {
+  try {
+    const rootMessage = await Message.findById(req.params.id);
+    const replies = await Message.find({ parentMessageId: req.params.id }).sort({ createdAt: 1 });
+
+    res.json({ root: rootMessage, replies });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+
 router.put('/:id/read', requireAuth, async (req, res) => {
   try {
     const updated = await Message.findByIdAndUpdate(
@@ -58,16 +81,25 @@ router.put('/:id/read', requireAuth, async (req, res) => {
   }
 });
 
-// Add a reply
 router.post('/:id/reply', requireAuth, async (req, res) => {
   try {
     const message = await Message.findById(req.params.id);
-    message.replies.push({ body: req.body.body });
+    if (!message) return res.status(404).json({ error: 'Message not found' });
+
+    message.replies.push({
+      senderId: req.user.id,
+      senderName: req.user.name,
+      body: req.body.body,
+    });
+
     await message.save();
     res.json(message);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Reply error:', err);  
+    res.status(500).json({ error: 'Failed to send reply' });
   }
 });
+
+
 
 module.exports = router;

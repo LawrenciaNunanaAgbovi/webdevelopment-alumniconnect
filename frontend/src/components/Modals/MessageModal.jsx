@@ -18,7 +18,7 @@ const MessageModal = ({
       return;
     }
 
-    onSend(message); // message already has all fields
+    onSend(message); 
   };
 
   return (

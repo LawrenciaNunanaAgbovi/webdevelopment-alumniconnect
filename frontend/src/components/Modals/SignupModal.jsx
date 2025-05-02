@@ -19,7 +19,7 @@ const SignupModal = ({ show, onClose, setAuth, setUser, navigate, setShowLogin }
     }
 
     try {
-      const res = await fetch('http://138.197.93.75:3001/api/users', {
+      const res = await fetch('http://138.197.93.75:3001/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -31,8 +31,9 @@ const SignupModal = ({ show, onClose, setAuth, setUser, navigate, setShowLogin }
       setAuth(formData.role);
       setUser(data);
       onClose();
-      alert('Account created successfully!');
-      navigate('/profile');
+      onClose();
+      alert('Signup successful! Your account is awaiting admin approval before login is enabled.');
+      setShowLogin(true);
     } catch (err) {
       setError(err.message);
     }
