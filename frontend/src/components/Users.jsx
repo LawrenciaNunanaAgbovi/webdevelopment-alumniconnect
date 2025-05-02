@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MessageModal from './Modals/MessageModal';
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -8,12 +9,12 @@ function Users() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [message, setMessage] = useState({ title: '', body: '' });
 
-  
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL || 'http://138.197.93.75:3001/api';
 
-  
   useEffect(() => {
     setLoading(true);
     fetch(`${API_URL}/users?page=${currentPage}`)
@@ -33,9 +34,7 @@ function Users() {
         setLoading(false);
       });
   }, [currentPage]);
-  
-  
-  
+
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
@@ -43,8 +42,29 @@ function Users() {
 
   const handleBackToHome = () => navigate('/');
 
+  const handleSendMessage = () => {
+    fetch(`${API_URL}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        recipientEmail: selectedUser.email,
+        recipientName: selectedUser.name,
+        title: message.title,
+        body: message.body,
+      }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Message sent:', data);
+        setShowMessageModal(false);
+        setMessage({ title: '', body: '' });
+      })
+      .catch(err => console.error('Error sending message:', err));
+  };
 
-  
   const filteredUsers = users.filter(user =>
     user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -132,7 +152,7 @@ function Users() {
             <h4 className="card-title">{selectedUser.name}</h4>
             <p><strong>Username:</strong> {selectedUser.username || 'N/A'}</p>
             <p><strong>Major:</strong> {selectedUser.major || 'N/A'}</p>
-            <p><strong>Graduation Year:</strong> {selectedUser.year_graduated || 'N/A'}</p>
+            <p><strong>Graduation Year:</strong> {selectedUser.graduationYear || 'N/A'}</p>
             <p><strong>Company:</strong> {selectedUser.company || 'N/A'}</p>
             <p><strong>Title:</strong> {selectedUser.title || 'N/A'}</p>
             <p><strong>Email:</strong> {selectedUser.email || 'N/A'}</p>
@@ -146,11 +166,30 @@ function Users() {
             <p><strong>Joined:</strong> {
               selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString() : 'N/A'
             }</p>
-            <button className="btn btn-outline-secondary mt-3" onClick={() => setSelectedUser(null)}>
-              Back to Users
-            </button>
+
+            <div className="mt-3 d-flex flex-column gap-2">
+              <button className="btn btn-outline-secondary" onClick={() => setSelectedUser(null)}>
+                Back to Users
+              </button>
+              <button className="btn btn-primary" onClick={() => setShowMessageModal(true)}>
+                Send Message
+              </button>
+            </div>
           </div>
         </div>
+      )}
+
+      {/* Only render modal if a user is selected */}
+      {selectedUser && (
+        <MessageModal
+          show={showMessageModal}
+          onClose={() => setShowMessageModal(false)}
+          recipientName={selectedUser.name}
+          recipientEmail={selectedUser.email}
+          message={message}
+          setMessage={setMessage}
+          onSend={handleSendMessage}
+        />
       )}
     </div>
   );

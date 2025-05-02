@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Profile = ({ user, setAuth, setUser  }) => {
+
+const Profile = ({ user, setAuth, setUser }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -45,12 +46,14 @@ const Profile = ({ user, setAuth, setUser  }) => {
             ) : 'N/A'}
           </p>
 
-          <button className="btn btn-outline-secondary mt-3" onClick={() => navigate('/')}>
-            Back to Home
-          </button>
-          <button className="btn btn-outline-danger" onClick={handleLogout}>
+          <div className="d-flex justify-content-center gap-2 mt-3">
+            <button className="btn btn-outline-secondary" onClick={() => navigate('/')}>
+              Back to Home
+            </button>
+            <button className="btn btn-outline-danger" onClick={handleLogout}>
               Logout
             </button>
+          </div>
         </div>
       </div>
     </div>

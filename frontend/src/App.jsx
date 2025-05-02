@@ -10,6 +10,7 @@ import Opportunities from './components/Opportunities';
 import AdminPanel from './components/AdminPanel';
 import LoginModal from './components/Modals/LoginModal';
 import SignupModal from './components/Modals/SignupModal';
+import MessageDetail from './components/MessageDetail';
 
 function AppWrapper() {
   return (
@@ -59,6 +60,7 @@ function App() {
           <Route path="/users" element={<Users />} />
           <Route path="/opportunities" element={<Opportunities />} />
           <Route path="/admin" element={<AdminPanel user={user} />} />
+          <Route path="/messages/:id" element={<MessageDetail />} />
         </Routes>
       </div>
 

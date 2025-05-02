@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/userRoutes");
 const opportunityRoutes = require("./routes/opportunityRoutes");
 const majorRoutes = require("./routes/majorRoutes");
+const messageRoutes = require('./routes/messageRoutes');
 const setupSwagger = require("./swagger");
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use(cors(corsOptions));         // ✅ Apply cors middleware here
 app.use(express.json());
 app.use(cookieParser());
 
+
 // ✅ Swagger
 setupSwagger(app);
 
@@ -33,6 +35,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/opportunities", opportunityRoutes);
 app.use("/api/majors", majorRoutes);
+app.use('/api/messages', messageRoutes);
 
 // ✅ Test endpoint
 app.get("/api", (req, res) => {
