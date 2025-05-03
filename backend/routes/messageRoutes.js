@@ -83,22 +83,38 @@ router.put('/:id/read', requireAuth, async (req, res) => {
 
 router.post('/:id/reply', requireAuth, async (req, res) => {
   try {
+    console.log('Reply request received for message ID:', req.params.id);
+    console.log('Request body:', req.body);
+    console.log('Logged-in user:', req.user);
+
+    const { body } = req.body;
+    if (!body) {
+      console.warn('❌ Reply body missing');
+      return res.status(400).json({ error: 'Reply body is required' });
+    }
+
     const message = await Message.findById(req.params.id);
-    if (!message) return res.status(404).json({ error: 'Message not found' });
+    if (!message) {
+      console.warn('❌ Message not found with ID:', req.params.id);
+      return res.status(404).json({ error: 'Message not found' });
+    }
 
     message.replies.push({
-      senderId: req.user.id,
+      senderId: req.user._id, // ⬅️ safer than req.user.id
       senderName: req.user.name,
-      body: req.body.body,
+      body: body,
     });
 
-    await message.save();
-    res.json(message);
+    const saved = await message.save();
+    console.log('✅ Reply saved');
+    res.json(saved);
   } catch (err) {
-    console.error('Reply error:', err);  
+    console.error('❌ Reply error (500):', err);
     res.status(500).json({ error: 'Failed to send reply' });
   }
 });
+
+
 
 
 

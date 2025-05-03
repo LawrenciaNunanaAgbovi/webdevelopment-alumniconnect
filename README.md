@@ -2,10 +2,10 @@
 
 
 
-Assignment3
+Project2
 Name: Lawrencia Agbovi
 
-Due Date: April 14, 2025
+Due Date: May 2nd, 2025
 
 Public server IP: 138.197.93.75
 
@@ -16,33 +16,33 @@ Link to deployed frontend: http://138.197.93.75
 
 Screenshot is in the assest folder
 
-1.Work on Pagination ✅
-
-2.Incorporate authentication using cookies and including refresh tokens: see "node-react-examples/auth-localstorage-vs-cookies" from repository. ✅
-
-** test login and sign up from the frontend. changege profile logic to get profile information for the user login. 
-** also chnage logic to view users and opportunities only after login or sign up. 
 
 
-3.Incorporate "messages" between users
-
-4.Include "roles" for users so an admin has special global privileges 
-
-5.Incorporate admins approving new opportunities and users
-
-6.Make sure resources are accessed appropriately using middleware: see "node-examples/authentication-notes-more-complete" for my broken version of middleware for you to start from
-
-7.For 10% extra credit, include a "service" layer and unit and integration test cases: see "node-examples/modular-best-practice" for example (NOTE: if you plan on doing this, let me know so when I come around the class to check on your work, we can discuss expectations)
-
-1. A person cannot view users/opportunities unless they are logged in or sign-up
-2. A role (user) can not view admin panel. Only when their role is admin
-3. Only admin can approve new users and opportunities. 
-4. When a new user is approved it adds to users database and when an opportunity is approved it adds to opportunities
-
-Users and admins will be able to add opportunities. Only Admins will be able to approve opportunities. 
+1. I am able to login and sign up as a user and admin (role)
+2. When you signup as User, the user needs to be approved first before you are able to login
+3. When you signup as admin you are automatically approved and can login
+4. Admin: a. Can view users, opportunities and profile 
+b. Can view Admin Panel
+c. Can approve new users and opportunities
+5. User: Can only view users, opportunities and profile
+6. Users can send messages to each other
+7. Users can logout
 
 
+Working admin login: Email: again@gmail.com
+Password: 12345
 
+Working user login: Email: newuser@example.com
+Password: testpassword
+
+working user signup: email: test5@gmail.com
+password: 12345
+
+8. When logging in or Signing up choose role
+9. Fixed Pagination from assignment3
+10. Deployed successfully on DigitalOcean using `pm2` and `nginx`.
+
+11. user can reply
 
 cd ~/project-2/project-2-LawrenciaNunanaAgbovi/backend
 cd ~/project-2/project-2-LawrenciaNunanaAgbovi/frontend
